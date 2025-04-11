@@ -2,6 +2,6 @@
 	path = circom-ecdsa
 	url = https://github.com/0xPARC/circom-ecdsa.git
 
-[submodule "timed-commitment"]
-    path = timed-commitment
-    url = https://github.com/topanisto/timed-commitments.git
+[submodule "timed-commitments"]
+	path = timed-commitments
+	url = https://github.com/topanisto/timed-commitments
