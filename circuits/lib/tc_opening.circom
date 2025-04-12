@@ -1,8 +1,5 @@
 pragma circom 2.0.0;
 
-// A timed commitment comes in the form of a commitPhaseMsg
-// commit, W, exp_primes.
-
 include "../../node_modules/circomlib/circuits/bitify.circom"; 
 include "../../node_modules/circomlib/circuits/gates.circom";
 
@@ -30,7 +27,7 @@ template TCOpening(k, N) {
     m2bits.in <== m;
 
     // get  W[-2], and then calculate from g^2^(2^k-256) to ""-1 for lsb
-    component g_exp[2**(k-1)];
+    signal g_exp[2**(k-1)];
     g_exp[0] = W[k-1]; // first entry (g^2^(2^(k-1)))
 
     // need to first exponentiate g^{2{2^{k-1}} 2^{k-1} - 256 times
@@ -41,18 +38,16 @@ template TCOpening(k, N) {
     // apply XOR
 
     component xors[256];
-    component LSB[256]; // 
+    signal LSB[256]; // 
 
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
     signal checks[257];
     checks[0] <== 1;
 
-
     for (var i == 0; i < 256; i ++) {
         var j = 2**(k-1) - 256 + i; // index 
         // calculate LSB
         LSB[i] = (g_exp[j] >> 0) & 1;
-        LSB[i] * (LSB[i]-1) == 0;
 
         xor[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
@@ -63,6 +58,6 @@ template TCOpening(k, N) {
         checks[i+1] <== checks[i] * (1-(S[i] - xors[i].out));
     }
 
-    // all checks pass; like a long and
+    // all checks pass; like an AND across all bits.
     out <== checks[256];
 }
