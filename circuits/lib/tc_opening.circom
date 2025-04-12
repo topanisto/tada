@@ -55,7 +55,7 @@ template TCOpening(k, N) {
     for (var i=0; i<256; i++) {
         var j = 2**(k-1) - i -1; // index 
         // calculate LSB
-        LSB[i] <-- (g_exp[j] >> 0) & 1;
+        LSB[i] <-- g_exp[j] % 2;
         0 === LSB[i] * (1-LSB[i]);
 
 

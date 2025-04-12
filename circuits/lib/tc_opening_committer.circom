@@ -15,7 +15,6 @@ template CommitterTCOpening(k, N) {
         {<h, g, u, S>, W, exp_primes}
     Only g, S, W, and m are necessary inputs to this circuit.
     """
-
     // get number of bits of N
     var n_bits = 0;
     var temp = N;
@@ -45,7 +44,6 @@ template CommitterTCOpening(k, N) {
     // priv v_exp_gen := 2^(2^k-256)
     // TODO: potentially have l be a parameter to the circuit so we can
     // directly take as input v_exp := 2^(2^k-l)
-
     // TODO: do we need to constrain this further??
     signal v_exp_gen;
     component v_exp2bits = Num2Bits(n_bits);
@@ -97,12 +95,14 @@ template CommitterTCOpening(k, N) {
     // we can proceed now as usual..
     component xors[256];
     signal LSB[256]; // 
+    component getlsb[256];
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
     for (var i = 0; i < 256; i ++) {
         var j = 256 -i-1;
         // calculate LSB of power of g
-        LSB[i] <-- (g_exp[j] >> 0) & 1;
-        0 === LSB[i] * (1-LSB[i]);
+        getlsb[i] = Num2Bits(n_bits);
+        getlsb[i].in <== g_exp[j];
+        LSB[i] <== getlsb[i].out[0];
 
         xors[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
