@@ -2,12 +2,11 @@ pragma circom 2.0.0;
 
 include "./lib/tc_opening.circom";
 
-
-template vanillaTada() {
+template vanillaTada(k, N) {
     """
     """
     component generic = Generic();
-    component tc_opening = TCOpening();
+    component tc_opening = TCOpening(k, N);
     signal output = out;
 
     component or = OR();
