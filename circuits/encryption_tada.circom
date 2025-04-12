@@ -1,4 +1,4 @@
-pragma circom 2.0.0;
+pragma circom 2.1.6;
 
 include "./lib/tc_opening_committer.circom";
 include "../../node_modules/circomlib/circuits/gates.circom";

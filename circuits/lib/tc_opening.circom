@@ -1,56 +1,69 @@
-pragma circom 2.0.0;
+pragma circom 2.1.6;
 
 include "../../node_modules/circomlib/circuits/bitify.circom"; 
 include "../../node_modules/circomlib/circuits/gates.circom";
+include "./modulus.circom";
 
 template TCOpening(k, N) {
     """
     ZKP of knowledge of committed value m to a timed commitment.
     The full structure of a timed commitment is
         {<h, g, u, S>, W, exp_primes}
-    Only g, S, W, and m are necessary inputs to this circuit.
+    Only S, W, and m are necessary inputs to this circuit.
     """
-    // commitment body
+    // generator
     signal input g;
+    // commitment body
     signal input S[256];
-
-    // W vector of modular exponents {2^2^i, 0<=i<=k}
+    // verification vector := <g^{2^{2^i}> for 0 <= i <= k
     signal input W[k+1];
 
-    // private input
+    // check W is generated correctly
+    component gmodN = ModuloOperator(N, 252);
+    signal g_2 <== g * g;
+    gmodN.in <== g_2;
+    W[0] === gmodN.out;
+
+    // private msg
     signal input m;
-
-    signal output out;
-
-    // convert to bits 
     component m2bits = Num2Bits(256);
     m2bits.in <== m;
 
-    // get  W[-2], and then calculate from g^2^(2^k-256) to ""-1 for lsb
+    signal output out;
+
+    // exponent
     signal g_exp[2**(k-1)];
-    g_exp[0] <-- W[k-1]; // first entry (g^2^(2^(k-1)))
+    g_exp[0] <== W[k-2]; // first entry (g^2^(2^(k-1)))
+
+    // signals for modulo N operations
+    component mods_exp[2**(k-1)-1];
+    signal temp_exp[2**(k-1)-1];
 
     // need to first exponentiate g^{2{2^{k-1}} 2^{k-1} - 256 times
-    for (var i == 1; i < 2**(k-1); i++) {
-        g_exp[i] <-- g_exp[i-1] * g_exp[i-1] % N;
+    for (var i = 1; i < 2**(k-1); i++) {
+        mods_exp[i-1] = ModuloOperator(N, 252);
+        temp_exp[i-1] <-- g_exp[i-1] * g_exp[i-1];
+        mods_exp[i-1].in <== temp_exp[i-1];
+        g_exp[i] <== mods_exp[i-1].out;
     }
 
     // apply XOR
-
     component xors[256];
-    signal LSB[256]; // 
+    signal LSB[256];
 
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
     signal checks[257];
     checks[0] <== 1;
     signal valid_xor[256];
 
-    for (var i == 0; i < 256; i ++) {
+    for (var i=0; i<256; i++) {
         var j = 2**(k-1) - i -1; // index 
         // calculate LSB
-        LSB[i] = (g_exp[j] >> 0) & 1;
+        LSB[i] <-- (g_exp[j] >> 0) & 1;
+        0 === LSB[i] * (1-LSB[i]);
 
-        xor[i] = XOR(); // new XOR gate
+
+        xors[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
         xors[i].b <== LSB[i];
         S[i] === xors[i].out;
@@ -60,6 +73,5 @@ template TCOpening(k, N) {
         checks[i+1] <== checks[i] * valid_xor[i];
     }
 
-    // all checks pass; like an AND across all bits.
     out <== checks[256];
 }
