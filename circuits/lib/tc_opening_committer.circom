@@ -50,7 +50,7 @@ template CommitterTCOpening(k, N) {
 
     // compute the starting exponent
     var start_exponent = 2**k - 256;
-    signal start_exponent_reduced <-- start_exponent % totient;
+    signal start_exponent_reduced <-- 2**start_exponent % totient;
 
     // decompose exponent into bits
     component exponent_bits = Num2Bits(n_bits);
