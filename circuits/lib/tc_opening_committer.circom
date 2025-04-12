@@ -50,7 +50,7 @@ template CommitterTCOpening(k, N) {
 
     // compute the starting exponent
     var start_exponent = 2**k - 256;
-    signal start_exponent_reduced <== start_exponent % totient;
+    signal start_exponent_reduced <-- start_exponent % totient;
 
     // decompose exponent into bits
     component exponent_bits = Num2Bits(n_bits);
@@ -58,22 +58,22 @@ template CommitterTCOpening(k, N) {
 
     // a vector of <g^1, g^2^i>
     signal g_powers[n_bits];
-    g_powers[0] <== g;
+    g_powers[0] <-- g;
     for (var i = 1; i < n_bits; i++) {
-        g_powers[i] <== powers[i-1] * powers[i-1] % N;
+        g_powers[i] <-- powers[i-1] * powers[i-1] % N;
     }
 
     // then multiply bits and corresponding powers together
     signal start_exponent_accumulator[n_bits];
-    start_exponent_accumulator[0] <== g_powers[0] * exponent_bits.out[0];
+    start_exponent_accumulator[0] <-- g_powers[0] * exponent_bits.out[0];
     for (var i=1; i< n_bits; i++) {
-        start_exponent_accumulator[i] <== (start_exponent_accumulator[i-1] + g_powers[i] * exponent_bits.out[i]) % N;
+        start_exponent_accumulator[i] <-- (start_exponent_accumulator[i-1] + g_powers[i] * exponent_bits.out[i]) % N;
     }
 
     signal g_exp[256];
-    g_exp[0] <== start_exponent_accumulator[n_bits-1];
+    g_exp[0] <-- start_exponent_accumulator[n_bits-1];
     for (var i=1; i < 256; i++) {
-        g_exp[i] <== (g_exp[i-1] ** g_exp[i-1]) % N;
+        g_exp[i] <-- (g_exp[i-1] ** g_exp[i-1]) % N;
     }
 
     // we can proceed now as usual..

@@ -28,11 +28,11 @@ template TCOpening(k, N) {
 
     // get  W[-2], and then calculate from g^2^(2^k-256) to ""-1 for lsb
     signal g_exp[2**(k-1)];
-    g_exp[0] = W[k-1]; // first entry (g^2^(2^(k-1)))
+    g_exp[0] <-- W[k-1]; // first entry (g^2^(2^(k-1)))
 
     // need to first exponentiate g^{2{2^{k-1}} 2^{k-1} - 256 times
     for (var i == 1; i < 2**(k-1); i++) {
-        g_exp[i] = g_exp[i-1] * g_exp[i-1] % N;
+        g_exp[i] <-- g_exp[i-1] * g_exp[i-1] % N;
     }
 
     // apply XOR
