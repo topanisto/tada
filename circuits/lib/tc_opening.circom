@@ -42,7 +42,7 @@ template TCOpening(k, N) {
     // need to first exponentiate g^{2{2^{k-1}} 2^{k-1} - 256 times
     for (var i = 1; i < 2**(k-1); i++) {
         mods_exp[i-1] = ModuloOperator(N, 252);
-        temp_exp[i-1] <-- g_exp[i-1] * g_exp[i-1];
+        temp_exp[i-1] <== g_exp[i-1] * g_exp[i-1];
         mods_exp[i-1].in <== temp_exp[i-1];
         g_exp[i] <== mods_exp[i-1].out;
     }
@@ -52,10 +52,6 @@ template TCOpening(k, N) {
     signal LSB[256];
 
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
-    signal checks[257];
-    checks[0] <== 1;
-    signal valid_xor[256];
-
     for (var i=0; i<256; i++) {
         var j = 2**(k-1) - i -1; // index 
         // calculate LSB
@@ -67,11 +63,8 @@ template TCOpening(k, N) {
         xors[i].a <== m2bits.out[i];
         xors[i].b <== LSB[i];
         S[i] === xors[i].out;
-
-        valid_xor[i] <== 1-(S[i] - xors[i].out);
-       // multiply running product by (S[i] === xors[i].out ? 1 : 0)
-        checks[i+1] <== checks[i] * valid_xor[i];
     }
 
-    out <== checks[256];
+    //TODO: fix output
+    out <== 1;
 }
