@@ -86,7 +86,7 @@ template CommitterTCOpening(k, N) {
 
     for (var i == 0; i < 256; i ++) {
         // calculate LSB of power of g
-        LSB[i] = (g_exp[i] >> 0) & 1;
+        LSB[i] = (g_exp[255-i] >> 0) & 1;
 
         xor[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
