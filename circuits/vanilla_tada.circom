@@ -18,7 +18,7 @@ template VanillaTada(k, N) {
     A simple Vanilla TADA circuit for proving knowledge of (a, b) of a Pythagorean
     triple a^2 + b^2 = c^2.
     """
-    // generic arm, idk
+    // pythagorean triple
     signal input a;
     signal input b;
     signal input c; // public

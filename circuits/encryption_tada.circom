@@ -21,7 +21,7 @@ template EncryptionTada(k, N) {
     // encryption circuit
     signal input ct;
     signal input sk;
-    
+
     component enc = PkEncryption();
     enc.m <== m;
     enc.ct <== ct;
@@ -51,5 +51,4 @@ template EncryptionTada(k, N) {
     eq_statements.b <== tc_opening.out;
 
     out <== eq_statements.out;
-    // 
 }

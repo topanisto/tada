@@ -65,6 +65,7 @@ template TCOpening(k, N) {
     signal res_comp[257];
     res_comp[0] <== 1;
     component comp[256];
+
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
     for (var i=0; i<256; i++) {
         var j = 2**(k-1) - i -1; // index 
@@ -83,9 +84,8 @@ template TCOpening(k, N) {
         comp[i].in[1] <== xors[i].out;
 
         // need an AND function
-        res_comp[i+1] <== comp[i].out * res__comp[i];
+        res_comp[i+1] <== comp[i].out * res_comp[i];
     }
 
-    //TODO: fix output
     out <== res_comp[256];
 }

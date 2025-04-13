@@ -44,7 +44,6 @@ template CommitterTCOpening(k, N) {
     // priv v_exp_gen := 2^(2^k-256)
     // TODO: potentially have l be a parameter to the circuit so we can
     // directly take as input v_exp := 2^(2^k-l)
-    // TODO: do we need to constrain this further??
     signal input v_exp_gen;
     component v_exp2bits = Num2Bits(n_bits);
     v_exp2bits.in <== v_exp_gen;
@@ -123,6 +122,5 @@ template CommitterTCOpening(k, N) {
         res_comp[i+1] <== comp[i].out * res_comp[i];
     }
 
-    // TODO: fix output
     out <== res_comp[256];
 }
