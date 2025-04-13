@@ -3,7 +3,7 @@
 > This is a proof of concept! Circuits have absolutely not been audited!
 
 A library of Circom circuits for TADA, or [Time-Assured Deniable Authentication](https://hackmd.io/b9e47uvCQ7u8psDqM05toA), including
-- `VanillaTada(k, N)` - A basic TADA circuit that proves knowledge of either a Pythagorean triple OR timed commitment opening with timing difficulty parameter k
+- `VanillaTada(k, N)` - A basic TADA circuit that proves knowledge of either a Pythagorean triple OR opening of a timed commitment with timing difficulty parameter k
 - `EncryptionTada(k, N)` *(UNDER CONSTRUCTION!)* - A TADA circuit that proves equality of the preimage of some ciphertext AND the opening of a timed commitment 
 
 as well as the following library circuits that may be useful:
