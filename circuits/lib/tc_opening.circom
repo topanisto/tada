@@ -2,6 +2,7 @@ pragma circom 2.1.6;
 
 include "../../node_modules/circomlib/circuits/bitify.circom"; 
 include "../../node_modules/circomlib/circuits/gates.circom";
+include "../../node_modules/circomlib/circuits/comparators.circom"; 
 include "./modulus.circom";
 
 template TCOpening(k, N) {
@@ -11,6 +12,14 @@ template TCOpening(k, N) {
         {<h, g, u, S>, W, exp_primes}
     Only S, W, and m are necessary inputs to this circuit.
     """
+    // get number of bits of N
+    var n_bits = 0;
+    var temp = N;
+    while (temp > 0) {
+        n_bits = n_bits + 1;
+        temp = temp \ 2;  // Integer division by 2
+    }
+
     // generator
     signal input g;
     // commitment body
@@ -50,21 +59,33 @@ template TCOpening(k, N) {
     // apply XOR
     component xors[256];
     signal LSB[256];
+    component getlsb[256];
 
+    // compare bitwise
+    signal res_comp[257];
+    res_comp[0] <== 1;
+    component comp[256];
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
     for (var i=0; i<256; i++) {
         var j = 2**(k-1) - i -1; // index 
         // calculate LSB
-        LSB[i] <-- g_exp[j] % 2;
-        0 === LSB[i] * (1-LSB[i]);
-
+        getlsb[i] = Num2Bits(n_bits);
+        getlsb[i].in <== g_exp[j];
+        LSB[i] <== getlsb[i].out[0];
 
         xors[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
         xors[i].b <== LSB[i];
-        S[i] === xors[i].out;
+
+        // compare S[i] to computed XOR
+        comp[i] = IsEqual();
+        comp[i].in[0] <== S[i];
+        comp[i].in[1] <== xors[i].out;
+
+        // need an AND function
+        res_comp[i+1] <== comp[i].out * res__comp[i];
     }
 
     //TODO: fix output
-    out <== 1;
+    out <== res_comp[256];
 }

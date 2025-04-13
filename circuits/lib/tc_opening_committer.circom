@@ -96,10 +96,16 @@ template CommitterTCOpening(k, N) {
     component xors[256];
     signal LSB[256]; // 
     component getlsb[256];
+
+    // compare bitwise
+    signal res_comp[257];
+    res_comp[0] <== 1;
+    component comp[256];
+
     // check s[i] = m_bits[i] XOR lsb(g^{2^{2^k-i}})
-    for (var i = 0; i < 256; i ++) {
-        var j = 256 -i-1;
-        // calculate LSB of power of g
+    for (var i=0; i<256; i++) {
+        var j = 2**(k-1) - i -1; // index 
+        // calculate LSB
         getlsb[i] = Num2Bits(n_bits);
         getlsb[i].in <== g_exp[j];
         LSB[i] <== getlsb[i].out[0];
@@ -107,9 +113,16 @@ template CommitterTCOpening(k, N) {
         xors[i] = XOR(); // new XOR gate
         xors[i].a <== m2bits.out[i];
         xors[i].b <== LSB[i];
-        S[i] === xors[i].out;
+
+        // compare S[i] to computed XOR
+        comp[i] = IsEqual();
+        comp[i].in[0] <== S[i];
+        comp[i].in[1] <== xors[i].out;
+
+        // need an AND function
+        res_comp[i+1] <== comp[i].out * res_comp[i];
     }
 
     // TODO: fix output
-    out <== 1;
+    out <== res_comp[256];
 }
