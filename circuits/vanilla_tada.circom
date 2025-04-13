@@ -15,7 +15,7 @@ template PythagoreanTriple() {
 
 template VanillaTada(k, N) {
     """
-    A simple Vanilla TADA circuit for proving that you know (a, b) of a Pythagorean
+    A simple Vanilla TADA circuit for proving knowledge of (a, b) of a Pythagorean
     triple a^2 + b^2 = c^2.
     """
     // generic arm, idk
