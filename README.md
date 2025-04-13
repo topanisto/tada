@@ -1,6 +1,5 @@
 # TADA: Time-Assured Deniable Authentication
 
-## UNDER CONSTRUCTION ‼️ 
 > This is a proof of concept! Circuits have absolutely not been audited!
 
 A library of Circom circuits for TADA, or [Time-Assured Deniable Authentication](https://hackmd.io/b9e47uvCQ7u8psDqM05toA), including
